@@ -34,20 +34,20 @@ static EFI_STATUS (EFIAPI *volatile aegis_entry_anchor)(EFI_HANDLE, EFI_SYSTEM_T
 static void dec(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *out, uint64_t n) {
   CHAR16 b[24]; int i=23; b[i--]=0;
   do { b[i--]=(CHAR16)('0'+(n%10)); n/=10; } while(n && i>=0);
-  out->OutputString(out,&b[i+1]);
+  emit(out,&b[i+1]);
 }
 static void hex(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *out, uint64_t n, int digits) {
   static const CHAR16 h[]={ '0','1','2','3','4','5','6','7',
                              '8','9','A','B','C','D','E','F' };
   CHAR16 b[19]; int i; if(digits<1) digits=1; if(digits>16) digits=16;
   for(i=digits-1;i>=0;--i){ b[i]=h[n&15U]; n>>=4; } b[digits]=0;
-  out->OutputString(out,b);
+  emit(out,b);
 }
 static void vendor(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *out, const CHAR16 *s) {
   CHAR16 b[81]; UINTN i;
   if(!s) { OUT("(not supplied)"); return; }
   for(i=0;i<80;i++){ CHAR16 c=s[i]; if(!c) break; b[i]=c; }
-  b[i]=0; out->OutputString(out,b);
+  b[i]=0; emit(out,b);
   if(i==80) OUT("...");
 }
 static void memory_map(EFI_BOOT_SERVICES *bs, EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *out) {
@@ -181,6 +181,8 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE image, EFI_SYSTEM_TABLE *st) {
   else OUT("Missing memory map boot services\r\n");
   if(bs->LocateHandleBuffer && bs->HandleProtocol && bs->FreePool) pci_inventory(bs,out);
   else OUT("Missing PCI enumeration boot services\r\n");
+  if(page_quit) return EFI_SUCCESS;
+  page_input=0;
   OUT("Press a key to exit\r\n");
   if(st->ConIn && st->ConIn->ReadKeyStroke) {
     EFI_INPUT_KEY key;

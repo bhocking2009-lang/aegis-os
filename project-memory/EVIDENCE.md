@@ -23,3 +23,4 @@ Remaining: exact-hash QEMU test, keyboard exit, independent review, physical GPU
 - Exact BAR values and status codes: not captured.
 - Clean keypress exit: not explicitly confirmed in this report.
 - Status: promising user-reported physical execution, not full independently verified acceptance.
+- Follow-up user confirmation: B02 exited cleanly via keyboard and machine subsequently rebooted into Windows without issue. Physical boot / discovery / exit / Windows return test PASSED (user-reported). Independent source review and QEMU regression remain separate gates.

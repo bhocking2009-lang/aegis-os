@@ -4,28 +4,36 @@
 #define OUT(s) emit(out, (const CHAR16 *)u##s)
 static EFI_SIMPLE_TEXT_INPUT_PROTOCOL *page_input;
 static EFI_BOOT_SERVICES *page_bs;
-static unsigned page_lines=0, page_height=20;
+static unsigned page_lines=0, page_height=18;
 static int page_quit=0;
 static void emit(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *out, const CHAR16 *s) {
   if(page_quit) return;
-  out->OutputString(out,s);
-  for(const CHAR16 *p=s;*p;p++) if(*p==10) {
-    if(++page_lines >= page_height && page_input && page_input->ReadKeyStroke) {
-      out->OutputString(out,(const CHAR16 *)u"[Space/Enter: next page, Q: skip output]\r\n");
-      EFI_INPUT_KEY key;
-      for(;;) {
-        if(page_input->ReadKeyStroke(page_input,&key)==EFI_SUCCESS) {
-          if(key.UnicodeChar==u'q'||key.UnicodeChar==u'Q')page_quit=1;
-          break;
-        }
-        if(page_input->WaitForKey && page_bs && page_bs->WaitForEvent) {
-          EFI_EVENT ev=page_input->WaitForKey;UINTN index=0;
-          if(EFI_ERROR(page_bs->WaitForEvent(1,&ev,&index)))break;
-        }
+  for(const CHAR16 *p=s;*p && !page_quit;p++) {
+    CHAR16 ch[2]={*p,0};
+    out->OutputString(out,ch);
+    if(*p!=10) continue;
+    if(++page_lines < page_height || !page_input || !page_input->ReadKeyStroke)continue;
+    out->OutputString(out,(const CHAR16 *)u"[Space/Enter: next page; Q: quit] ");
+    EFI_INPUT_KEY key;
+    for(;;) {
+      EFI_STATUS rd=page_input->ReadKeyStroke(page_input,&key);
+      if(rd==EFI_SUCCESS) {
+        if(key.UnicodeChar==u'q'||key.UnicodeChar==u'Q') {page_quit=1;break;}
+        if(key.UnicodeChar==u' '||key.UnicodeChar==13)break;
+        continue;
       }
-      page_lines=0;
-      if(page_quit)return;
+      if(rd!=EFI_NOT_READY){page_quit=1;break;}
+      if(!page_input->WaitForKey || !page_bs || !page_bs->WaitForEvent){page_quit=1;break;}
+      EFI_EVENT ev=page_input->WaitForKey;UINTN index=0;
+      if(EFI_ERROR(page_bs->WaitForEvent(1,&ev,&index))){page_quit=1;break;}
     }
+    if(page_quit)break;
+    if(out->ClearScreen) {
+      EFI_STATUS (EFIAPI *clear)(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *)=
+        (EFI_STATUS (EFIAPI *)(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *))out->ClearScreen;
+      clear(out);
+    } else out->OutputString(out,(const CHAR16 *)u"\r\n");
+    page_lines=0;
   }
 }
 /* Keep a real absolute pointer in the PE image so UEFI relocation is testable. */

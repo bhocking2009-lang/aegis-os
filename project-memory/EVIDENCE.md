@@ -12,3 +12,14 @@ Remaining: exact-hash QEMU test, keyboard exit, independent review, physical GPU
 
 2026-10-12 05:48 EDT: Read-only verification: final candidate file still 12675 bytes and SHA256 65A3D7E7673119061C7B01CA3D4E1FEFF2E809467F7B2FB33EC1CB059B86F081. QEMU PID 23124 remains responsive (started 03:22:21 EDT). Inspected its actual command line: -monitor none -serial file:.../serial.log -nographic -no-reboot -no-shutdown, staging older candidate. No exposed QMP/monitor control channel for automated keyboard-exit testing. Source static review confirms main.c invokes real GetMemoryMap, LocateHandleBuffer, HandleProtocol and Pci.Read; previous B01_REVIEW_FINDINGS.md describes superseded rejected source and is not an independent review of this candidate. Attempted host-mock harness creation/compilation was blocked by remote safety controls before execution; no harness or test result produced. No new VM, target writes, or B00/122B changes.
 2026-10-12: USER-REPORTED PHYSICAL B01 TEST PASS 7/7: USB UEFI boot, real memory map, PCI enumeration, AMD GPU identification, keyboard response, clean exit, and no observed destructive changes. Tested USB BOOTX64.EFI was staged with SHA256 65A3D7E7673119061C7B01CA3D4E1FEFF2E809467F7B2FB33EC1CB059B86F081. This is user-attested physical evidence, not independent source review or final-hash QEMU regression. Formal B01 acceptance remains OPEN.
+
+2026-10-12 12:47 EDT: Separate read-only source audit recorded at project-memory/B01_SOURCE_AUDIT_2026-10-12_1247EDT.md. Confirmed B01 final hash 65A3D7E7673119061C7B01CA3D4E1FEFF2E809467F7B2FB33EC1CB059B86F081 and B00 backup hash FA097445D479CA9F425F2CEFFB048FD33FB68B0D0419B3BABDA86B806AD52AD6. No active qemu-system-x86_64 process observed (previous PID blocker no longer present), but no new QEMU test performed. Source audit documents keyboard error/fallback, discovery-status propagation, and PCI display-class verification gaps. B02 exists in separate commit 93259a9; untracked aegis_b02/prepare_b02.py left untouched. B01 formal acceptance still OPEN; no B00/USB/firmware/122B modifications.
+
+## B02 physical test — 2026-10-12 (user report)
+- Target: Full Metal Bitch, RX 6800 XT, AEGIS USB, B02 SHA256 E156A5AA18A4082373817F1CAE8DE631931550AFFED270FD9FAF358305EBA0EB.
+- User reports console output closely matched illustrative B02 firmware memory / PCI / GPU BAR discovery screen.
+- PCI handles reported: 34.
+- Number of successfully displayed PCI devices: not recalled / not independently verified.
+- Exact BAR values and status codes: not captured.
+- Clean keypress exit: not explicitly confirmed in this report.
+- Status: promising user-reported physical execution, not full independently verified acceptance.

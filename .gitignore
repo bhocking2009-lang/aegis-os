@@ -1,0 +1,24 @@
+# Aegis repository safety exclusions
+*.efi
+*.iso
+*.img
+*.bin
+*.log
+*.tmp
+*.bak
+*.rejected
+.env
+.env.*
+**/secrets/**
+**/credentials/**
+**/node_modules/**
+**/__pycache__/**
+archive/
+memory/
+AGENTS.md
+DREAMS.md
+IDENTITY.md
+SCRATCHPAD.md
+SOUL.md
+USER.md
+*.fd

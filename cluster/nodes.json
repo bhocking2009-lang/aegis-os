@@ -1,0 +1,18 @@
+{
+    "nodes":  [
+                  {
+                      "verified_from":  "DESKTOP-64AAHR5",
+                      "id":  "AEGIS-SCOUT",
+                      "autostart":  "windows-user-login",
+                      "think_default":  false,
+                      "state":  "remote-inference-verified",
+                      "role":  "lightweight-diagnostics",
+                      "host":  "FULL-METAL-BITCH",
+                      "model":  "qwen3.5:4b",
+                      "access":  "alpha-only-firewall",
+                      "provider":  "ollama",
+                      "endpoint":  "http://192.168.68.59:11435"
+                  }
+              ],
+    "schema_version":  1
+}
